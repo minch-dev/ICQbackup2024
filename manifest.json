@@ -1,0 +1,44 @@
+﻿{
+    "name": "ICQ Backup 2024",
+    "version": "0.0.0.0",
+	"description": "ICQ history backup tool 2024",
+    //"options_page": "opt.htm",
+	//"background": {	"service_worker": "bg.js"	},
+    //"key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4r/pUHVPYQTn7vu3YHT52I0SKM15OBOTi0Jii4q5Koxd3Gdc/WXdqC2YgMA25J5PRiSubu/nHFf12Ubp3OZyNqB3j45ZscQ+tH1bwcV+cqdvv/Ik6VQaS6/qLmenLdFPKOCg/g1L1iKZu6Jjny6GlovpBj+7gjWQZBIoGBd70HQIDAQAB",
+    "manifest_version": 3,
+    "content_scripts": [
+        {
+          "matches": [ "*://web.icq.com/*" ],
+          "js": [ "document_start.js" ],
+          "run_at": "document_start"
+        }
+    ],
+    "web_accessible_resources": [{ 
+		"resources": ["media/favicon.ico","media/16.png", "script.js"],
+		"matches": ["<all_urls>"]
+	}],
+    "permissions": [],
+	"host_permissions":[
+		//"<all_urls>",
+		"*://web.icq.com/*"
+	],
+	"icons": {
+		"16": "media/16.png",
+		"19": "media/19.png",
+		"32": "media/32.png",
+		"36": "media/36.png",
+		"48": "media/36.png",
+		"64": "media/64.png",
+		"128": "media/128.png"
+	},
+
+    "action": {
+		"default_icon": {
+			"16": "media/16.png",
+			"19": "media/19.png",
+			"32": "media/32.png"
+		},
+        "default_title": "ICQ chat history backup tool 2024",
+        "default_popup": "pop.htm"
+    }
+}
