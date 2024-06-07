@@ -2,7 +2,7 @@
 ICQ web chat history backup tool
 
 # The Why
-2024.06.24 the current owner of the ICQ messenger turns off the service forever after decades of online presence. No ways to export chat history or contacts were provided by the owner, hence I decided to fix this oversight on their part.
+2024.06.26 the current owner of the ICQ messenger turns off the service forever after decades of online presence. No ways to export chat history or contacts were provided by the owner, hence I decided to fix this oversight on their part.
 
 # The Who
 This extension is tested in Google Chrome, but should work in any versions of Firefox after they adopted WebExtensions standard.

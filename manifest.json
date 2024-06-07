@@ -14,7 +14,7 @@
         }
     ],
     "web_accessible_resources": [{ 
-		"resources": ["media/favicon.ico","media/16.png", "script.js"],
+		"resources": ["media/favicon.ico","media/16.png", "script.js", "dialogue.css"],
 		"matches": ["<all_urls>"]
 	}],
     "permissions": [],

@@ -7,13 +7,15 @@ const ꕥ = {};
 	right: 0px;
 	position: fixed;
 	z-index: 3000;
-	border-left: solid 1px #eceef3;
+	border: solid 1px rgba(var(--theme-color-base_bright));
+	border-right:none;
+	border-top:none;
 	box-sizing: border-box;
+	max-width: 36%;
 }
 
 .gzMenu{
-	background-color:rgba(var(--theme-color-base_globalwhite));
-	border-bottom: solid 1px #eceef3;
+	color:rgba(var(--theme-color-text_solid));
 	top:0px;
 	height:56px;
 	padding: 19px;
@@ -26,7 +28,6 @@ const ꕥ = {};
 	zoom: 0.5;
 	padding:0px;
 	margin:0px;
-	height: 100%;
 	width: 720px;
 	top: 112px;
 	bottom:0px;
@@ -38,10 +39,6 @@ const ꕥ = {};
 	width: 24px !important;
 }
 
-.gzSave .gzHistoryDump {
-	top:56px;
-}
-
 
 .gzSave .gzHistoryDump::-webkit-scrollbar{
 	width: 14px !important;
@@ -51,7 +48,7 @@ const ꕥ = {};
 *::-webkit-scrollbar {
     all: initial !important;
     width: 15px !important;
-    background: #f1f1f1 !important;
+    background:rgba(var(--theme-color-chat_environment))  !important;
 }
 
 *::-webkit-scrollbar-button { all: initial !important; }
@@ -63,8 +60,8 @@ const ꕥ = {};
 
 *::-webkit-scrollbar-thumb {
     all: initial !important;
-    background: #c1c1c1 !important;
-	border: solid 1px #c1c1c1 !important;
+    background: rgba(var(--theme-color-ghost_secondary_inverse)) !important;
+	border: solid 1px rgba(var(--theme-color-base_bright_inverse)) !important;
 }
 
 *::-webkit-scrollbar-button{
@@ -93,7 +90,102 @@ const ꕥ = {};
     top: 0;
     bottom: 0;
 }
+
+#root.gzSave{
+	right:0;
+}
+
+.gzMenu .gzPreview::before{
+    content: "Собранная история чата (предпросмотр)";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin: 6px 60px;
+    white-space: nowrap;
+    padding: 5px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 0.75em;
+    background: rgba(var(--theme-color-chat_environment));
+}
+
+
+#root.gzSave #gz_history_dump{
+	top: 56px;
+    zoom: 1;
+    left: 280px;
+    width: auto;
+    right: 0px;
+    max-width: none;
+}
+
+#root.gzSave.im-layout-infopanel #gz_history_dump,
+#root.gzSave.im-layout-infopanel .gzMenu
+{
+	right: 330px;
+}
+
+#root.gzSave #gz_history_dump::before{
+	content:"";
+	display:none;
+}
+
+#root .gzMenu .gzSave{
+	display:none;
+}
+
+#root .gzMenu .gzThanks{
+	display:none;
+}
+
+#root.gzSave .gzPreview{
+	display:none;
+}
+
+#root.gzSave .gzMenu .gzThanks{
+	display:block;
+	padding-right:16px;
+    width: 190px;
+    text-align: right;
+	background:rgba(var(--theme-color-base_globalwhite));
+}
+
+
+.gzMenu .gzSave button,
+.gzMenu .gzThanks a
+{
+    color: rgba(var(--theme-color-text_primary));
+    display: inline;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+#root.gzSave .gzMenu{
+    right:0px;
+	width:auto;
+	min-width:140px;
+	max-width: none;
+	padding: 0px;
+	z-index: 3001;
+    border-left: none;
+    display: flex;
+    align-items: center;
+	justify-content: right;
+	max-height: 100%;
+}
+
+#root.gzSave #rightPane,
+#root.gzSave #gz_history_dump,
+#root.gzSave .gzMenu{
+	left:0;
+}
+
 `;
+
+
 
 ꕥ.patchResetMessageBlocks = `
 	var gz_history_dump = ꕥ.gz_history_dump;
@@ -181,33 +273,170 @@ const ꕥ = {};
 	}
 }
 
+ꕥ.add_style_link = function(href){
+	let style = document.createElement('link');
+	style.rel = "stylesheet";
+	style.href = href;
+	document.documentElement.appendChild(style);
+}
+
+ꕥ.save_html = function(){
+	let root = document.getElementById("root");
+	
+	//fix last date
+	let dates = ꕥ.gz_history_dump.querySelectorAll('*[data-next-id] span');
+	if(dates.length){
+		let last_date_txt = dates[dates.length-1].innerText.trim();
+		if(isNaN(last_date_txt[last_date_txt.length-1])){
+			dates[dates.length-1].innerText += ' '+new Date().getFullYear();
+		}
+	}
+	
+	//unhide all dates
+	document.querySelectorAll('#gz_history_dump >.im-messages__date').forEach(function(node) {
+			node.removeAttribute('style');
+	});
+
+	//remove excess ui
+	ꕥ.gz_history_dump.querySelectorAll('.im-quick-menu-wrapper').forEach(function(node) {
+		node.remove();
+	});
+		
+	root.classList.add("gzSave");
+}
+
+
+ꕥ.close_save = function(){
+	let root = document.getElementById("root");
+	root.classList.remove("gzSave");
+}
+
+ꕥ.contacts = {};
+ꕥ.current_sn = 0;
+
+ꕥ.change_title = function(sn){
+	let person = ꕥ.contacts[sn];
+	if(sn == ꕥ.current_sn){
+		let title = '#'+sn;
+		if(!!person.firstName){
+			title += ' '+person.firstName;
+		}
+		if(!!person.lastName){
+			title += ' '+person.lastName;
+		}
+		if(!!person.friendly){
+			title += ' ('+person.friendly+')';
+		}
+		document.title = title;
+	}
+}
+ꕥ.update_contact = function(person){
+	let sn = person.sn;
+	if(!ꕥ.contacts[sn]){
+		ꕥ.contacts[sn] = {sn:sn};
+	}
+	if(!!person.firstName){
+		ꕥ.contacts[sn].firstName = person.firstName;
+	}
+	if(!!person.lastName){
+		ꕥ.contacts[sn].lastName = person.lastName;
+	}
+	if(!!person.friendly){
+		ꕥ.contacts[sn].friendly = person.friendly;
+	}
+}
+ꕥ.dump_the_dump = function(){
+	if(!!ꕥ.gz_history_dump){
+		ꕥ.gz_history_dump.innerHTML = '';
+	}
+}
+
+
+window.gz_process_json = function(json){
+	console.debug(json.requestParams.sn,json);
+	
+	if(!!json.persons && !!json.requestParams && !!json.requestParams.sn){
+		for(let p=0; p<json.persons.length; p++){
+			if(json.persons[p].sn == json.requestParams.sn){
+				ꕥ.update_contact(json.persons[p]);
+				ꕥ.change_title(json.persons[p].sn);
+				break;
+			}
+		}
+	}
+}
+window.gz_switch_chat = function(data){
+	console.debug('switching to:',data);
+	ꕥ.update_contact({sn:data.mail});
+	ꕥ.current_sn = data.mail;
+	ꕥ.change_title(ꕥ.current_sn);
+	ꕥ.dump_the_dump();
+}
+
+//this.unloadChat();
+
 //monkey patch and reinject the script and everything
 ꕥ.fetch_text(location.href,function(html){
 	html = html.replace(/\<link\ rel=(icon|apple-touch-icon)[^>]+\>/gm,'');
 	html = html.replace('</head>','<link rel="shortcut icon" type="image/ico" href="data:image/x-icon;base64,AAABAAEAICAQAAAAAADoAgAAFgAAACgAAAAgAAAAQAAAAAEABAAAAAAAgAIAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAACAAACAAAAAgIAAgAAAAIAAgACAgAAAwMDAAICAgAAAAP8AAP8AAAD//wD/AAAA/wD/AP//AAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB3cAAAAAAAAAAAAAAAAACAAANwAAAAAAAAAAAAAAAAACIABwB4cAAAAAAAAAAAgAKqoghwAAgAAAAAAAAAAIAqqqoAACIAcAAAAAAAAAAwqqqqAAKqIIAAAAAAAAAAgCqqqgAKqiCAAAAAAAAAAIAKqqoAKqogiDOHAAAAAIiAAqqqACqqAAAAAIAAAHAAAAAqqgAqogACKiAHAAAAGZEAAqIAqiAAKqqiAwAAAJmZEAAiACIAAqqqqgAAAACZmZkAAAAAAiqqqqoAAABwCZmZkAu7MAqqqqqiAwAACAABGRC7u7ACIqqqIAcABwAAAAAAu7uzAAAAAACAAHAAIiAAALu7swAAAAAIAACAKqqqoiA7u7ACIiAAAwAAMCqqqqogADMAAqqqogAwAIAqqqqiAAAAAgACqqogBwCACqqqIAAiACogACqqoggAAAAiIAACogAqogACKiAHAAAwAAAAKqIAKqoAAAAAMAAAB4iDACqgAKqqIAAzOAAAAAAAAAKqoACqqqIAAAAAAAAAAHAqqiAAqqqqAAAAAAAAAABwKqogAKqqqgAAAAAAAAAAcAqiAAAqqqIAAAAAAAAAAAMCIAdwAqogCAAAAAAAAAAHAACACAAAAIAAAAAAAAAAAAdwAABzAAgAAAAAD//////+P///+A////AGP//gAB//4AAP/+AAD//gAA//4AAAf4AAAD4AAAAeAAAAHgAAAB4AAAAeAAAAHwAAABwAAAA4AAAAeAAAAHgAAAA4AAAAGAAAABwAAAAeAAAAPwAAAH/wAAf/4AAH/+AAB//gAAf/8AAH//AwD//8+B/w==">'+'</head>'); //'+ꕥ.ext_url+'media/favicon.ico
 	//console.debug(html);
-	document.documentElement.innerHTML = html + '<div class="gzMenu"><span>История чата (предпросмотр)</span> <br></div><div class="gzHistoryDump gzPreview" id="gz_history_dump"></div>';
-	ꕥ.gz_history_dump = document.getElementById('gz_history_dump');
+	document.documentElement.innerHTML = html;
 	jsrc = document.querySelector('script[src*="r/webim."]').src;
 	ꕥ.fetch_text(jsrc,function(jscript){
+		let replace_1 = 'reader.onload=function(event){img.src=event.target.result';
+		let replace_2 = 'function _resetMessageBlocks(){';
+		let replace_3 = '{this.messageOutDom(obj.node)';
+		let replace_4 = 'cb.call(this,fullCode,resultData)';
+		let replace_5 = 'function loadChat(pageObject,data){';
 		ꕥ.add_style_txt(ꕥ.css);
-		ꕥ.add_script_txt(
-			jscript
+		jscript = jscript
 			.replace('scriptUrl=document.currentScript.src;','scriptUrl="'+jsrc+'";') //"fix automatic publicPath error"
-			.replace('function _resetMessageBlocks(){','function _resetMessageBlocks(){'+ꕥ.patchResetMessageBlocks)
-			.replace('{this.messageOutDom(obj.node);','{this.messageOutDom(obj.node);'+ꕥ.patchStepUpAndDown)
-		);
+			.replace(replace_1,replace_1+'.replace("data:application/octet-stream;base64,","data:image;base64,")') //fix avatars
+			.replace(replace_2,replace_2+ꕥ.patchResetMessageBlocks)
+			.replace(replace_3,replace_3+ꕥ.patchStepUpAndDown)
+			.replace(replace_4,'window.gz_process_json(resultData);'+replace_4)
+			.replace(replace_5,replace_5 + 'window.gz_switch_chat(data);')
+			.replace('document.title=tmpTitle','')
+		;
+		ꕥ.add_script_txt(jscript);
+		//console.debug(jscript);
+		ꕥ.add_style_link(ꕥ.ext_url + 'dialogue.css');
+		ꕥ.gz_history_dump = document.getElementById('gz_history_dump');
+		if(!ꕥ.gz_history_dump){
+			document.getElementById('root').innerHTML+=`
+<div class="gzHistoryDump" id="gz_history_dump"></div>
+<div class="gzMenu">
+	<div class="gzPreview">
+		<span>Сохранить:</span>
+		<button id="gz_save_btn" onclick="ꕥ.save_html()">.mhtml</button>
+		<!--button id="gz_json_btn" onclick="ꕥ.save_json()">.json</button-->
+	</div>
+	<div class="gzSave">
+		<span title="Развернутое пояснение по клику на значок дополнения (цветок ICQ)">Страница готова к сохранению</span>
+		<br>
+		<button id="gz_haalp">
+			Подробнее
+			<ul>
+				<li>Нажмите <i>⋮</i> в правом верхнем углу браузера</li>
+				<li>Выберите <i>Сохранить и поделиться</i> ⇨ <i>Сохранить страницу как...</i></li>
+				<li>В открывшемся окне в меню <i>Тип файла</i> выберите <i>Веб-страница, один файл (*.mhtml)</i> и нажмите <i>Сохранить</i></span></li>
+				<li>(Примечание: возможно вы захотите включить панель <i>Информация</i> чтобы сохранить базовые данные о собеседнике с перепиской)</li>
+				<dd>
+					<a href="https://boosty.to/minch-dev/donate" target="_blank">Задонатить</a>  автору
+				</dd>
+			</ul>
+		</button>
+		<button id="gz_close_btn" onclick="ꕥ.close_save()">Отмена</button>
+	</div>
+	<div class="gzThanks">
+		<span title="Сохранено с помощью расширения ICQbackup2024">ICQbackup2024<span> <br> <a href="https://github.com/minch-dev" title="Ссылка на Гитхаб">minch-dev</a>
+	</div>
+</div>
+`;
+			ꕥ.gz_history_dump = document.getElementById('gz_history_dump');
+		}
+
+		
 	});
 });
 
-/*
-//
-.im-quick-menu-wrapper			like	to delete
-
-document.querySelectorAll('#gz_history_dump >.im-messages__date').forEach(function(node) {
-	let style = node.getAttribute('style');
-	if(!!style && style.indexOf('visibility')>-1){
-		node.removeAttribute('style');
-	}
-});
-*/
