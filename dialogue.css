@@ -17,6 +17,26 @@
     margin-right: 50px;
     align-items: flex-start;
 }
+
+#root.gzSave #mainPagesContReact.gzBeware:hover::before{
+	display:none;
+}
+
+#mainPagesContReact.gzBeware:hover::before{
+	content:"⚠️ ВНИМАНИЕ ⚠️\A Выбор другого чата очистит .mhtml историю этого чата!\A\A\A Кликните на этом поле, чтобы продолжить.";
+	white-space: pre-wrap; 
+	position:absolute;
+	top:0; left:0;
+	right:0; bottom:0;
+	background:rgb(0 0 0 / 73%);
+	color:white;
+	z-index: 3000;
+	display: flex;
+    align-items: center;
+    text-align: center;
+	justify-content: center;
+}
+
 #gz_haalp{
 	position:relative;
 }
