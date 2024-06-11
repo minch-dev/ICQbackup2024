@@ -1,3 +1,82 @@
+@charset "utf-8";
+#gz_save_btn,
+#gz_files_btn
+{
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:67px;
+	padding:0;
+}
+#gz_files_btn{
+	right:0;
+	left:auto;
+}
+
+#gz_save_btn::before{
+	content:"сохранить ";
+    font-size:0.9em;
+}
+#gz_auto_scroll_btn{
+    position:absolute;
+    right:100%;
+    margin-right:16px;
+    top:55px;
+    margin-top:16px;
+}
+
+
+.gzMenu .gzPreview::after{
+    content:"Собранная .html история чата (предпросмотр)";
+    position:absolute;
+	top:100%;
+	left:0;
+	right:10px;
+	margin:6px 40px;
+	padding:5px;
+	border-radius:10px;
+    white-space:nowrap;
+	text-align:center;
+	font-size:0.75em;
+    background:rgba(var(--theme-color-chat_environment));
+}
+
+#gz_json_chat_btn,
+#gz_json_all_btn
+{
+	position:absolute;
+    left:67px;
+	height:28px;
+    width:225px;
+	text-align:left;
+}
+#gz_json_chat_btn{
+	top: 0;
+}
+#gz_json_all_btn{
+	bottom:0;
+}
+
+.gzPreview button m::after{
+	content:" сооб";
+}
+.gzPreview button c::after{
+	content:" конт";
+}
+.gzPreview button m,
+.gzPreview button c{
+	float:right;
+	font-size: 0.8em;
+	margin-left: 0.2em;
+	white-space:nowrap;
+}
+#gz_save_btn m{
+	float:none;
+}
+
+
+
 #root.gzSave .gzMenu .gzSave{
 	display:block;
 }
@@ -6,6 +85,7 @@
 {
 	display:none;
 }
+
 
 #root.gzSave .gzMenu{
 	right:0px;

@@ -1,74 +1,79 @@
 const ꕥ = {};
 ꕥ.ext_url = document.getElementById('gz_script').getAttribute('data-ext-url');
-
 ꕥ.icq = {contacts:{},chats:{}};//,files:{}
 
+ꕥ.store_json = function(){
+	try{
+		localStorage.setItem('ꕥICQbackup2024', JSON.stringify(ꕥ.icq));
+	} catch {
+		console.debug('failed to store json, too big?');
+	}
+}
+
+ꕥ.restore_json = function(){
+	let icq = null;
+	try{
+		icq = JSON.parse(localStorage.getItem('ꕥICQbackup2024'))
+	} catch {
+		console.debug('failed to load stored json');
+	}
+	if(!!icq && icq.contacts && icq.chats){
+		ꕥ.icq = icq;
+	}
+}
+
+ꕥ.json_download = function(json,filename){
+	//generating file
+	if(!json)return;
+	if(!filename)filename = 'ICQbackup2024';
+	blob = new Blob([JSON.stringify(json)], { type: 'application/json' });
+	var a = document.createElement('a');
+	a.href = URL.createObjectURL(blob);
+	a.download = filename +".json";
+	a.click();
+}
+
+ꕥ.restore_json();
+
 ꕥ.css = `
+@charset "utf-8";
 .gzMenu,
 .gzHistoryDump{
-	right: 0px;
-	position: fixed;
-	z-index: 3000;
-	border: solid 1px rgba(var(--theme-color-base_bright));
-	border-right:none;
-	border-top:none;
-	box-sizing: border-box;
-	max-width: 36%;
+	position: fixed; right: 0px; z-index: 3000;
+	box-sizing: border-box; max-width: 36%;
 }
 
 .gzMenu{
-	color:rgba(var(--theme-color-text_solid));
 	top:0px;
-	height:56px;
-	padding: 19px;
-	width: 360px;
+	color:rgba(var(--theme-color-text_solid));
+	height:56px; width: 360px; padding: 19px;
+	border: solid 1px rgba(var(--theme-color-base_bright));border-right:none;border-top:none;
 }
-
 
 .gzHistoryDump{
 	background-color: rgba(var(--theme-color-chat_environment));
 	zoom: 0.5;
-	padding:0px;
-	margin:0px;
-	width: 720px;
-	top: 112px;
-	bottom:0px;
-	overflow-y: auto;
-	border-left-width:2px;
+	width:720px; padding:0px; margin:0px; overflow-y:auto;
+	top:112px; bottom:0px;
+	border:none; border-left:solid 2px rgba(var(--theme-color-base_globalwhite));
 }
 
 .gzHistoryDump::-webkit-scrollbar{
-	width: 24px !important;
+	width:24px !important;
 }
-
 
 .gzSave .gzHistoryDump::-webkit-scrollbar{
-	width: 14px !important;
+	width:14px !important;
 }
 
-
-*::-webkit-scrollbar {
-    all: initial !important;
-    width: 15px !important;
-    background:rgba(var(--theme-color-chat_environment))  !important;
-}
-
+*::-webkit-scrollbar {	all:initial !important; width:15px !important; background:rgba(var(--theme-color-chat_environment)) !important;	}
 *::-webkit-scrollbar-button { all: initial !important; }
 *::-webkit-scrollbar-track { all: initial !important; }
 *::-webkit-scrollbar-track-piece { all: initial !important; }
 *::-webkit-scrollbar-corner { all: initial !important; }
 *::-webkit-resizer { all: initial !important; }
-
-
-*::-webkit-scrollbar-thumb {
-    all: initial !important;
-    background: rgba(var(--theme-color-ghost_secondary_inverse)) !important;
-	border: solid 1px rgba(var(--theme-color-base_bright_inverse)) !important;
-}
-
-*::-webkit-scrollbar-button{
-	display:none !important;
-}
+*::-webkit-scrollbar-thumb {	all:initial !important; background:rgba(var(--theme-color-ghost_secondary_inverse)) !important; border:solid 1px rgba(var(--theme-color-base_bright_inverse)) !important;	}
+*::-webkit-scrollbar-button{	display:none !important;	}
 
 .im-scrollbars__horisontal-track,
 .im-scrollbars__vertical-track,
@@ -77,48 +82,21 @@ const ꕥ = {};
 	display:none !important;
 }
 
-.im-scrollbar__source{
-	scrollbar-width:auto !important;
-}
-.im-scrollbars__view{
-	margin:0 !important;
-    overflow:auto !important;
-}
+.im-scrollbar__source{	scrollbar-width:auto !important;	}
+.im-scrollbars__view{	margin:0 !important; overflow:auto !important;	}
 
 #root{
-	position: fixed;
-    right: 360px;
-    left: 0;
-    top: 0;
-    bottom: 0;
+	position:fixed; right:360px; left:0; top:0; bottom:0;
 }
 
 #root.gzSave{
 	right:0;
 }
 
-.gzMenu .gzPreview::before{
-    content: "Собранная история чата (предпросмотр)";
-    position: absolute;
-    top: 100%;
-    left: 0;
-    margin: 6px 60px;
-    white-space: nowrap;
-    padding: 5px;
-    border-radius: 10px;
-    text-align: center;
-    font-size: 0.75em;
-    background: rgba(var(--theme-color-chat_environment));
-}
-
 
 #root.gzSave #gz_dump{
-	top: 56px;
-    zoom: 1;
-    left: 280px;
-    width: auto;
-    right: 0px;
-    max-width: none;
+	top:56px; left:280px; right:0px; width:auto; max-width:none;
+    zoom:1;
 }
 
 #root.gzSave.im-layout-infopanel #gz_dump,
@@ -166,17 +144,10 @@ const ꕥ = {};
 }
 
 #root.gzSave .gzMenu{
-    right:0px;
-	width:auto;
-	min-width:140px;
-	max-width: none;
-	padding: 0px;
-	z-index: 3001;
+    right:0px; z-index:3001;
+	width:auto; min-width:140px; max-width:none; max-height:100%; padding:0px;
     border-left: none;
-    display: flex;
-    align-items: center;
-	justify-content: right;
-	max-height: 100%;
+    display:flex; align-items:center; justify-content:right;
 }
 
 #root.gzSave #rightPane,
@@ -192,9 +163,11 @@ const ꕥ = {};
 <div class="gzHistoryDump" id="gz_dump"></div>
 <div class="gzMenu">
 	<div class="gzPreview">
-		<span>Сохранить:</span>
-		<button id="gz_save_btn" onclick="ꕥ.save_html()">.mhtml</button>
-		<!--button id="gz_json_btn" onclick="ꕥ.save_json()">.json</button-->
+		<button id="gz_save_btn" onclick="ꕥ.save_html()">*.mhtml <m>0</m></button>
+		<button id="gz_json_chat_btn" onclick="ꕥ.save_json_chat()">*.json, этот чат <c>0</c> <m>0</m></button>
+		<button id="gz_json_all_btn" onclick="ꕥ.save_json_all()">*.json, все чаты   <c>0</c> <m>0</m></button>
+		<button id="gz_files_btn" onclick=""> </button>
+		<button id="gz_auto_scroll_btn" onclick="ꕥ.auto_scroll" title="В конце будет подан звуковой сигнал.">Собрать историю (автопрокрутка).</button>
 	</div>
 	<div class="gzSave">
 		<span title="Развернутое пояснение по клику на значок дополнения (цветок ICQ)">Страница готова к сохранению</span>
@@ -205,7 +178,7 @@ const ꕥ = {};
 				<li>Нажмите <i>⋮</i> в правом верхнем углу браузера</li>
 				<li>Выберите <i>Сохранить и поделиться</i> ⇨ <i>Сохранить страницу как...</i></li>
 				<li>В открывшемся окне в меню <i>Тип файла</i> выберите <i>Веб-страница, один файл (*.mhtml)</i> и нажмите <i>Сохранить</i></span></li>
-				<li>(Примечание: возможно вы захотите включить панель <i>Информация</i> чтобы сохранить базовые данные о собеседнике с перепиской)</li>
+				<li>(Примечание: возможно вы захотите включить панель <i>Информация</i> чтобы сохранить вид профиля собеседника вместе с перепиской)</li>
 				<dd>
 					<a href="https://boosty.to/minch-dev/donate" target="_blank">Задонатить</a>  автору
 				</dd>
@@ -218,6 +191,17 @@ const ꕥ = {};
 	</div>
 </div>
 `;
+
+ꕥ.auto_scroll = function(){
+	let viewport = document.querySelector('.im-history');
+	let delay = 500;
+/*	viewport.scrollBy(0,-2*viewport.clientHeight); //step back in case it fails
+	window.setTimeout(function(){
+		viewport.scrollTo(0,viewport.scrollHeight);
+	},parseInt(Math.random()*250)+250);
+	window.setTimeout(ꕥ.auto_scroll, delay);*/
+
+}
 
 ꕥ.fix_dump = function(){
 	//fix dates
@@ -272,13 +256,14 @@ const ꕥ = {};
 				}
 			}
 		}
-		if(ꕥ.dump.childNodes.length >99){
-			document.getElementById('mainPagesContReact').classList.add("gzBeware");
+		let class_list = document.getElementById('mainPagesContReact').classList;
+		if(!class_list.contains("gzWarned") && ꕥ.dump.childNodes.length >99){
+			class_list.add("gzBeware");
 		}
 		ꕥ.fix_dump();
+		ꕥ.refresh_stats();
 	}
 }
-
 
 ꕥ.fetch_text = function(uri,callback){
 	var xhr = new XMLHttpRequest();
@@ -319,10 +304,65 @@ const ꕥ = {};
 	document.documentElement.appendChild(style);
 }
 
+
+ꕥ.get_total_all_contacts = function(){
+	return Object.keys(ꕥ.icq.contacts).length;
+}
+ꕥ.get_total_chat_contacts = function(chat){
+	if(chat && chat.persons){
+		return Object.keys(chat.persons).length;
+	} else {
+		return 1;
+	}
+}
+ꕥ.get_total_chat_messages = function(chat){
+	if(chat && chat.messages){
+		return Object.keys(chat.messages).length;
+	} else {
+		return 0;
+	}
+}
+ꕥ.get_total_all_messages = function(){
+	var total = 0;
+	Object.keys(ꕥ.icq.chats).forEach(function(sn){
+		total += ꕥ.get_total_chat_messages(ꕥ.icq.chats[sn]);
+	});
+	return total;
+}
+
+ꕥ.refresh_stats = function(){
+	ꕥ.btn_mhtml_m.textContent = ꕥ.dump.querySelectorAll('.im-message').length;
+	ꕥ.btn_json_chat_m.textContent = ꕥ.get_total_chat_messages(ꕥ.icq.chats[ꕥ.current_sn]);
+	ꕥ.btn_json_chat_c.textContent = ꕥ.get_total_chat_contacts(ꕥ.icq.chats[ꕥ.current_sn]);
+	ꕥ.btn_json_all_m.textContent = ꕥ.get_total_all_messages();
+	ꕥ.btn_json_all_c.textContent = ꕥ.get_total_all_contacts();
+}
+
 ꕥ.save_html = function(){
 	ꕥ.scrap_chat();
 	let root = document.getElementById("root");
 	root.classList.add("gzSave");
+}
+ꕥ.save_json_chat = function(){
+	ꕥ.owner = ꕥ.module_13.a.ACTIVE_MAIL;
+	let branch = {contacts:{}};
+	branch.chat = ꕥ.icq.chats[ꕥ.current_sn] || {};
+	if(!branch.chat.persons){
+		branch.contacts[ꕥ.current_sn] = ꕥ.icq.contacts[ꕥ.current_sn];
+	} else {
+		Object.keys(branch.chat.persons).forEach(function(sn){
+			branch.contacts[sn] = ꕥ.icq.contacts[sn];
+		});
+	}
+	let filename = 'ICQ #'+ꕥ.owner+' чат с '+document.title+' контактов['+ꕥ.get_total_chat_contacts(branch.chat)+'] сообщений['+ꕥ.get_total_chat_messages(branch.chat)+']';
+	console.debug(filename);
+	ꕥ.json_download(branch,filename);
+}
+ꕥ.save_json_all = function(){
+	ꕥ.owner = ꕥ.module_13.a.ACTIVE_MAIL;
+	let filename = 'ICQ #'+ꕥ.owner+' контактов['+ꕥ.get_total_all_contacts()+'] сообщений['+ꕥ.get_total_all_messages()+']';
+	console.debug(filename);
+	ꕥ.json_download(ꕥ.icq,filename);
 }
 
 ꕥ.close_save = function(){
@@ -334,7 +374,7 @@ const ꕥ = {};
 
 ꕥ.change_title = function(sn){
 	let person = ꕥ.icq.contacts[sn];
-	if(sn == ꕥ.current_sn){
+	if(person && sn == ꕥ.current_sn){
 		let title = '#'+sn;
 		if(!!person.firstName){
 			title += ' '+person.firstName;
@@ -371,8 +411,11 @@ const ꕥ = {};
 	}
 	let contact = ꕥ.icq.contacts[sn];
 	Object.keys(info).forEach(function(key){
-		if( ꕥ.defined(info[key]) || !ꕥ.defined(contact[key])){ // adds new value or new key
+		if( ꕥ.defined(info[key]) && info[key]!="[deleted]"){
 			contact[key] = info[key];
+		}
+		if( !ꕥ.defined(contact[key]) ){
+			contact[key] = undefined;
 		}
 	});
 }
@@ -387,38 +430,6 @@ const ꕥ = {};
 	} else {
 		return obj;
 	}
-}
-
-
-ꕥ.process_data = function(data){
-	//process contact info
-	Object.keys(data.cast).forEach(function(key){
-		let info = ꕥ.copy(data.cast[key]);
-		info.sn = key;
-		if( ꕥ.defined(info.nick) ){
-			info.friendly = info.nick;
-			delete info.nick;
-		}
-		ꕥ.update_contact(info);
-	});
-
-	console.debug(data);
-	
-	/*
-	//process messages
-	if(!ꕥ.icq.chats[data.mail]){
-		ꕥ.icq.chats[data.mail] = {};
-	}
-	ꕥ.icq.chats[data.mail].sn = data.mail;
-	Object.keys(data).forEach(function(key){
-		if(key!='cast' && key!='history' && key!='historyLoaded' && key!='mail' && key!='historyCurrentPack'){
-			ꕥ.icq.chats[data.mail][key] = data[key];
-		}
-	});
-	console.debug(data);
-	for(let h=0; h<data.history.length; h++){
-		//console.debug(data.history[h]);
-	}*/
 }
 
 ꕥ.process_contact_info = function(info){
@@ -436,6 +447,17 @@ const ꕥ = {};
 	//console.debug(info);
 }
 
+ꕥ.process_persons = function(json){
+	var sn = ꕥ.current_sn; //json.requestParams.sn;
+	for(let p=0; p<json.persons.length; p++){
+		if(json.persons[p].sn == sn){
+			ꕥ.update_contact(json.persons[p]);
+			ꕥ.change_title(sn);
+		}
+	}
+	//console.debug(json);
+}
+
 ꕥ.dump_the_dump = function(){
 	if(!!ꕥ.dump){
 		ꕥ.dump.innerHTML = '';
@@ -446,8 +468,6 @@ const ꕥ = {};
 	//console.debug(json.lastMsgId || json.lastMessageId,json);
 }
 
-//getDownloadGDPRDataLink
-//checkGDPRData
 
 ꕥ.owner = 'outgoing';
 ꕥ.process_msgs = function(json){
@@ -508,8 +528,23 @@ const ꕥ = {};
 
 			}
 		}
+		ꕥ.refresh_stats();
 	}
 }
+
+
+ꕥ.switch_chat = function(data){
+	ꕥ.current_sn = data.mail;
+	ꕥ.change_title(ꕥ.current_sn);
+	ꕥ.dump_the_dump();
+	ꕥ.store_json();
+	ꕥ.refresh_stats();
+	document.getElementById('mainPagesContReact').classList.remove("gzWarned");
+}
+
+
+//getDownloadGDPRDataLink
+//checkGDPRData
 
 //lastseen: 1559560271
 //var Chat = function() {
@@ -517,50 +552,10 @@ const ꕥ = {};
 //localStorage _AIM_clist_list
 //_AIM_dialogs_data
 
-
-ꕥ.switch_chat = function(data){
-	ꕥ.current_sn = data.mail;
-	ꕥ.process_data(data);
-	ꕥ.change_title(ꕥ.current_sn);
-	ꕥ.dump_the_dump();
-}
-
-ꕥ.auto_scroll = function(){
-	if(document.getElementById('auto_scroll').checked){
-		window.scrollBy(0,-2*document.body.clientHeight); //step back in case it fails
-		
-		window.setTimeout(function(){
-				window.scrollTo(0,document.body.scrollHeight);
-		},parseInt(Math.random()*250)+250);
-		
-		window.setTimeout(𓅥.auto_scroll, document.getElementById('auto_scroll_delay').value*1000);
-	}
-}
-
-//function updateViewWithFixPosition(	в обоих случаях
-
 //return this.updateViewWithFixPosition(updatingFunction)
-
-//_this5.afterViewUpdate()
-
-//только первый раз при загрузке
-//function onLoadSnippet()
-	//function _updateDynamicObjects()
-
 //function _isScrolledToHistoryEnd()
 //function checkLastVisibleMessage() {
-	
-//function getHistory
 
-/*
-if(!jQuery){
-	𓅥.swarm = json; //fired during page load
-} else {
-	jQuery.extend(true,𓅥.swarm,json); //DEEP copy
-}
-*/
-
-//_modules_app_AppState__WEBPACK_IMPORTED_MODULE_13__.a.ACTIVE_MAIL
 //monkey patch and reinject the script and everything
 ꕥ.fetch_text(location.href,function(html){
 	html = html.replace(/\<link\ rel=(icon|apple-touch-icon)[^>]+\>/gm,'');
@@ -582,6 +577,7 @@ if(!jQuery){
 		let patch_11 = 'var RELOAD_HISTORY_ON_REFRESH=false;var STORAGED_HISTORY_LIMIT=3*HISTORY_PART_VOLUME;';
 		let patch_12 = 'dlgToSave.history=[dlg.history[dlg.history.length-1].slice(-historyLimit)];';
 		let patch_13 = 'return this.send(rapi.methods.getHistory,params,cb,scope)';
+		let patch_14 = 'function(resultValue){var resultCode=resultValue.resultCode,data=resultValue.data;';
 		ꕥ.add_style_txt(ꕥ.css);
 		jscript = jscript
 			.replace('scriptUrl=document.currentScript.src;','scriptUrl="'+jsrc+'";') //"fix automatic publicPath error"
@@ -593,10 +589,11 @@ if(!jQuery){
 			.replace(patch_6,patch_6 + 'ꕥ.scrap_chat();')	//clone messages after load
 			.replace(patch_7,patch_7 + 'ꕥ.process_contact_info(userInfo);')	//get user data
 			.replace(patch_9,patch_9 + 'ꕥ.module_13=')	//expose webpack module
-			.replace(patch_10,'for(let d=0;d<data.dialogs.length;d++){data.dialogs[d].history = [];};'+patch_10)	//stop loading cached crap 0
+			.replace(patch_10,'if(!!data && !!data.dialogs){for(let d=0;d<data.dialogs.length;d++){data.dialogs[d].history = []}};'+patch_10)	//stop loading cached crap 0
 			.replace(patch_12,'dlgToSave.history=[];')	//stop loading cached crap 1 
 				//.replace(patch_11,'var RELOAD_HISTORY_ON_REFRESH=true;var STORAGED_HISTORY_LIMIT=1;')	//stop loading cached crap 2
 			.replace(patch_13,'let cbwas = cb; cb = function(code,reqId,fullCode,resultData){ꕥ.process_msgs(resultData);cbwas(code,reqId,fullCode);};'+patch_13)	//stop loading cached crap 3
+			.replace(patch_14,patch_14+'ꕥ.process_persons(data);')	//additional user data
 			.replace('document.title=tmpTitle','')	//stop ruining title
 		;
 		ꕥ.add_script_txt(jscript);
@@ -607,10 +604,20 @@ if(!jQuery){
 			let root = document.getElementById('root');
 			root.innerHTML += ꕥ.html;
 			root.addEventListener('click', function (e) {
-				if ('mainPagesContReact' == e.target.id) {
-					e.target.classList.remove("gzBeware");
+				let class_list = e.target.classList;
+				if ('mainPagesContReact' == e.target.id && !class_list.contains("gzWarned")) {
+					class_list.remove("gzBeware");
+					class_list.add("gzWarned");
 				}
 			}, false);
+			ꕥ.btn_mhtml = document.getElementById('gz_save_btn');
+			ꕥ.btn_json_chat = document.getElementById('gz_json_chat_btn');
+			ꕥ.btn_json_all = document.getElementById('gz_json_all_btn');
+			ꕥ.btn_mhtml_m = ꕥ.btn_mhtml.querySelector('m');
+			ꕥ.btn_json_chat_m = ꕥ.btn_json_chat.querySelector('m');
+			ꕥ.btn_json_chat_c = ꕥ.btn_json_chat.querySelector('c');
+			ꕥ.btn_json_all_m = ꕥ.btn_json_all.querySelector('m');
+			ꕥ.btn_json_all_c = ꕥ.btn_json_all.querySelector('c');
 			ꕥ.dump = document.getElementById('gz_dump');
 		}
 
