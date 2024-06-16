@@ -272,19 +272,44 @@ window.addEventListener("beforeunload", function(event) {
 	document.documentElement.appendChild(style);
 }
 
+ꕥ.html_download = function(html,filename){
+	if(!html)return;
+	if(!filename)filename = 'download';
+	blob = new Blob([html], { type: 'txt/html' });
+	var a = document.createElement('a');
+	a.href = URL.createObjectURL(blob);
+	a.download = filename +".html";
+	a.click();
+}
+
+ꕥ.save_file_list = function(){
+	ꕥ.html_download('<html><head><meta charset="utf8"></head><body>'+ꕥ.file_list.innerHTML+'</body></html>','#'+ꕥ.current_sn+' file list');
+}
+
 ꕥ.render_file_list = function(){
 	let root = document.getElementById("root");
 	if(!!root && root.classList.contains("gzFiles") && !!ꕥ.current_sn && !!ꕥ.icq.chats[ꕥ.current_sn] && !!ꕥ.icq.chats[ꕥ.current_sn].files){
 		let files = ꕥ.icq.chats[ꕥ.current_sn].files;
 		ꕥ.file_list.innerHTML = '';
+		let now = Date.now();
+		let hours24 = 1000*60*60*24;
 		Object.keys(files).forEach(function(file_id){
 			let file = files[file_id];
 			let i = document.createElement('i');
-			i.textContent = (file.dlink_timestamp || '-/-')+' ';
+			let time_left = 0;
+			if(!!file.dlink_timestamp){
+				time_left = file.dlink_timestamp+hours24-now;
+			}
+			time_left = time_left/1000/60/60;
+			 
+			i.textContent = Math.floor(time_left)+'ч:'+Math.floor((time_left%1)*60)+'м ';
 			ꕥ.file_list.appendChild(i);
 			
 			let a = document.createElement('a');
-			a.textContent = file.file_name;
+			a.textContent = file_id+'; '+file.file_name;//'; #'+file.sn+'; '
+			if(file.date_created){
+				a.textContent = (file.date_created.replaceAll(' ','_').replaceAll(':','-'))+'; '+ a.textContent;
+			}
 			a.href = file.dlink || '#';
 			a.target = '_blank';
 			ꕥ.file_list.appendChild(a);
@@ -351,7 +376,7 @@ window.addEventListener("beforeunload", function(event) {
 	a.download = filename +".json";
 	a.click();
 }
-ꕥ.save_html = function(){
+ꕥ.prep_mhtml = function(){
 	ꕥ.scrap_chat();
 	ꕥ.store_icq();
 	let root = document.getElementById("root");
@@ -802,7 +827,7 @@ window.addEventListener("beforeunload", function(event) {
 <div class="gzFilesList" id="gz_files"></div>
 <div class="gzMenu">
 	<div class="gzPreview">
-		<button id="gz_save_btn" onclick="ꕥ.save_html()" title="Запустите автосбор истории чтобы получить все сообщения"><m>-</m></button>
+		<button id="gz_save_btn" onclick="ꕥ.prep_mhtml()" title="Запустите автосбор истории чтобы получить все сообщения"><m>-</m></button>
 		<button id="gz_json_chat_btn" onclick="ꕥ.save_json_chat()" title="В сообщения входят события, поэтому число может не совпадать с html">*.json, этот чат <c>-</c> <m>-</m></button>
 		<button id="gz_json_all_btn" onclick="ꕥ.save_json_all()" title="">*.json, все чаты   <c>-</c> <m>-</m></button>
 		<button id="gz_files_btn" onclick="ꕥ.toggle_files()"><f>-</f></button>
@@ -827,6 +852,9 @@ window.addEventListener("beforeunload", function(event) {
 	</div>
 	<div class="gzThanks">
 		<span title="Сохранено с помощью расширения ICQbackup2024">ICQbackup2024<span> <br> <a href="https://github.com/minch-dev" title="Ссылка на Гитхаб">minch-dev</a>
+	</div>
+	<div class="gzFiles">
+		<button id="gz_save_file_list" onclick="ꕥ.save_file_list()" title="Для импорта в менеджер закачек и т.п.">Сохранить список ссылок как .html страницу</button>
 	</div>
 </div>
 `;

@@ -71,8 +71,21 @@
 	display: inline-block;
 }
 
+.gzMenu .gzFiles{
+	display:none;
+}
 
+#root.gzFiles .gzMenu .gzFiles{
+	display:block;
+}
 
+#gz_save_file_list{
+    position: absolute;
+    top: 0;
+    right: 66px;
+    height: 100%;
+    left: 0px;
+}
 
 .gzMenu .gzPreview::after{
     content:"Собранная .html история чата (предпросмотр)";
