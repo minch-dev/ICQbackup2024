@@ -3,7 +3,7 @@
     "version": "0.0.0.0",
 	"description": "ICQ history backup tool 2024",
     //"options_page": "opt.htm",
-	//"background": {	"service_worker": "bg.js"	},
+	"background": {	"service_worker": "bg.js"	},
     //"key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4r/pUHVPYQTn7vu3YHT52I0SKM15OBOTi0Jii4q5Koxd3Gdc/WXdqC2YgMA25J5PRiSubu/nHFf12Ubp3OZyNqB3j45ZscQ+tH1bwcV+cqdvv/Ik6VQaS6/qLmenLdFPKOCg/g1L1iKZu6Jjny6GlovpBj+7gjWQZBIoGBd70HQIDAQAB",
     "manifest_version": 3,
     "content_scripts": [
@@ -14,14 +14,20 @@
         }
     ],
     "web_accessible_resources": [{ 
-		"resources": ["media/favicon.ico","media/16.png", "script.js", "dialogue.css"],
+		"resources": ["script.js", "dialogue.css","media/sndSrvMsg.wav","media/sndStartup.wav"],
 		"matches": ["<all_urls>"]
 	}],
-    "permissions": [],
+    "permissions": [
+		"storage",
+		"downloads",
+		"unlimitedStorage"
+	],
 	"host_permissions":[
-		//"<all_urls>",
 		"*://web.icq.com/*"
 	],
+	"externally_connectable": {
+		"matches": ["*://web.icq.com/*"]
+	},
 	"icons": {
 		"16": "media/16.png",
 		"19": "media/19.png",

@@ -1,4 +1,50 @@
 @charset "utf-8";
+
+.btnGoBackUp{
+    right: 0px;
+    margin: 8px;
+    position: absolute;
+    cursor: pointer;
+    z-index: 3000;
+	width:11em;
+	padding: 0;
+	margin-right: 60px;
+}
+
+.im-dialog_pinned .btnGoBackUp
+{
+	top: 0px;
+    
+}
+
+.btnGoBackUp,
+.im-dialog_pinned.im-dialog_pinned-collapsed .btnGoBackUp{
+	top: 48px;
+}
+
+
+
+
+.btnGoBackUp button::before{
+	content:"Прокрутить туда, где прервали сбор";
+}
+
+#gz_auto_scroll_btn{
+    position: absolute;
+    right: 100%;
+    margin:8px;
+    top: 100%;
+    margin-right: 60px;
+    width: 13.2em;
+    padding: 0;
+}
+
+#root.im-layout-infopanel #gz_auto_scroll_btn
+{
+	margin-right: 350px;
+}
+
+
 #gz_save_btn,
 #gz_files_btn
 {
@@ -8,23 +54,24 @@
     bottom:0;
     width:67px;
 	padding:0;
+	height: 100%;
 }
 #gz_files_btn{
 	right:0;
 	left:auto;
 }
 
+#gz_files_btn::before{
+	content:"Файлы";
+}
+
 #gz_save_btn::before{
-	content:"сохранить ";
+	content:"сохранить *.mhtml ";
     font-size:0.9em;
+	display: inline-block;
 }
-#gz_auto_scroll_btn{
-    position:absolute;
-    right:100%;
-    margin-right:16px;
-    top:55px;
-    margin-top:16px;
-}
+
+
 
 
 .gzMenu .gzPreview::after{
@@ -64,8 +111,12 @@
 .gzPreview button c::after{
 	content:" конт";
 }
+#gz_json_chat_btn c::after{
+	content:" участ";
+}
 .gzPreview button m,
-.gzPreview button c{
+.gzPreview button c
+{
 	float:right;
 	font-size: 0.8em;
 	margin-left: 0.2em;
@@ -74,7 +125,11 @@
 #gz_save_btn m{
 	float:none;
 }
-
+#gz_files_btn f{
+	font-size: 0.8em;
+	float:none;
+	display:block;
+}
 
 
 #root.gzSave .gzMenu .gzSave{
@@ -102,7 +157,9 @@
 	display:none;
 }
 
-#mainPagesContReact.gzBeware:hover::before{
+.gzScanning::before,
+#mainPagesContReact.gzBeware:hover::before
+{
 	content:"⚠️ ВНИМАНИЕ ⚠️\A Выбор другого чата очистит .mhtml историю этого чата!\A\A\A Кликните на этом поле, чтобы продолжить.";
 	white-space: pre-wrap; 
 	position:absolute;
@@ -115,6 +172,11 @@
     align-items: center;
     text-align: center;
 	justify-content: center;
+}
+
+.gzScanning::before
+{
+	content:"Идет сбор истории.\A Чтобы остановить нажмите где угодно на затененной области.\A\A ⚠️После сигнала о завершении обязательно проверьте дошли ли вы до конца, и если нет - продолжите сбор⚠️";
 }
 
 #gz_haalp{
