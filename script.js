@@ -106,7 +106,7 @@ window.addEventListener("beforeunload", function(event) {
 							}
 						});
 					}
-					if(download_automatically()){ //if download is on
+					if(ꕥ.download_automatically()){ //if download is on
 						Object.keys(collected.chats[sn].files).forEach(function(file_id){
 							let file = stored.chats[sn].files[file_id];
 							ꕥ.download_file({file:file, chat_sn:sn, save_path:'#'+sn+'/'+ꕥ.make_filename(file)});
