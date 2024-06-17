@@ -1,11 +1,45 @@
 @charset "utf-8";
 
+.gzMenu.gzLoading::before{
+	content:"Загружается...";
+	position:absolute;
+	left:0;right:0;top:0;bottom:0;
+	background:rgba(255,255,255,0.7);
+	z-index: 1;
+	padding: 18px;
+}
+.gzFilesList a{
+	padding: 1px;
+	display: inline-block;
+	margin: 2px;
+	color: rgba(var(--theme-color-text_solid));
+}
+
+.gzFilesList a[downloaded="2"]{
+	background:rgba(var(--theme-color-primary_selected));
+	color:rgba(var(--theme-color-text_solid_permanent));
+}
+.gzFilesList a[downloaded="-1"]{
+	background:rgba(var(--theme-color-secondary_attention));
+	color:rgba(var(--theme-color-text_solid_permanent));
+}
+
+.gzFilesList a[downloaded="2"]::before{
+	content:"✔️";
+}
+.gzFilesList a[downloaded="-1"]::before{
+	content:"❌";
+}
+.gzFilesList a[downloaded="1"]::before{
+	content:"📥";
+}
+
 .btnGoBackUp{
-    right: 0px;
-    margin: 8px;
-    position: absolute;
-    cursor: pointer;
-    z-index: 3000;
+	right: 0px;
+	margin: 8px;
+	position: absolute;
+	cursor: pointer;
+	z-index: 3000;
 	width:11em;
 	padding: 0;
 	margin-right: 60px;
@@ -14,7 +48,7 @@
 .im-dialog_pinned .btnGoBackUp
 {
 	top: 0px;
-    
+	
 }
 
 .btnGoBackUp,
@@ -22,43 +56,77 @@
 	top: 48px;
 }
 
-
-
-
 .btnGoBackUp button::before{
 	content:"Прокрутить туда, где прервали сбор";
 }
 
 #gz_auto_scroll_btn{
-    position: absolute;
-    right: 100%;
-    margin:8px;
-    top: 100%;
-    margin-right: 60px;
-    width: 13.2em;
-    padding: 0;
+	position: absolute;
+	right: 100%;
+	margin:8px;
+	top: 100%;
+	margin-right: 60px;
+	width: 13.2em;
+	padding: 0;
 }
 
 #root.im-layout-infopanel #gz_auto_scroll_btn
 {
-	margin-right: 350px;
+	margin-right: 390px;
 }
 
-
 #gz_save_btn,
-#gz_files_btn
+#gz_files_btn,
+#gz_download_automatically
 {
-    position:absolute;
-    left:0;
-    top:0;
-    bottom:0;
-    width:67px;
+	position:absolute;
+	left:0;
+	top:0;
+	bottom:0;
+	width:67px;
 	padding:0;
 	height: 100%;
 }
+
+#gz_download_automatically,
 #gz_files_btn{
-	right:0;
-	left:auto;
+	right: 0;
+	left: auto;
+	height: 28px;
+	width: 77px;
+}
+
+#gz_download_automatically{
+	bottom: auto;
+	line-height:0.75em;
+	text-align: left;
+}
+
+#gz_download_automatically input{
+	margin: 0;
+	margin-right: 0.2em;
+	vertical-align: bottom;
+}
+
+#gz_download_automatically label{
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: -2px;
+	padding:2px 4px;
+}
+
+#gz_download_automatically label::after{
+	content: "Качать файлы сразу";
+	font-size: 0.8em;
+}
+
+#gz_files_btn{
+	font-size: 0.7em;
+	top: auto;
 }
 
 #gz_files_btn::before{
@@ -67,7 +135,7 @@
 
 #gz_save_btn::before{
 	content:"сохранить *.mhtml ";
-    font-size:0.9em;
+	font-size:0.9em;
 	display: inline-block;
 }
 
@@ -80,35 +148,35 @@
 }
 
 #gz_save_file_list{
-    position: absolute;
-    top: 0;
-    right: 66px;
-    height: 100%;
-    left: 0px;
+	position: absolute;
+	top: 0;
+	right: 77px;
+	height: 100%;
+	left: 0px;
 }
 
 .gzMenu .gzPreview::after{
-    content:"Собранная .html история чата (предпросмотр)";
-    position:absolute;
+	content:"Собранная .html история чата (предпросмотр)";
+	position:absolute;
 	top:100%;
 	left:0;
 	right:10px;
 	margin:6px 40px;
 	padding:5px;
 	border-radius:10px;
-    white-space:nowrap;
+	white-space:nowrap;
 	text-align:center;
 	font-size:0.75em;
-    background:rgba(var(--theme-color-chat_environment));
+	background:rgba(var(--theme-color-chat_environment));
 }
 
 #gz_json_chat_btn,
 #gz_json_all_btn
 {
 	position:absolute;
-    left:67px;
+	left:67px;
 	height:28px;
-    width:225px;
+	width:215px;
 	text-align:left;
 }
 #gz_json_chat_btn{
@@ -157,13 +225,13 @@
 
 #root.gzSave .gzMenu{
 	right:0px;
-    font-size: 0.95em;
-    line-height: 1.8em;
+	font-size: 0.95em;
+	line-height: 1.8em;
 	left: 280px;
 	min-width:200px;
 	margin-left: 200px;
-    margin-right: 50px;
-    align-items: flex-start;
+	margin-right: 50px;
+	align-items: flex-start;
 }
 
 #root.gzSave #mainPagesContReact.gzBeware:hover::before{
@@ -182,8 +250,8 @@
 	color:white;
 	z-index: 3000;
 	display: flex;
-    align-items: center;
-    text-align: center;
+	align-items: center;
+	text-align: center;
 	justify-content: center;
 }
 
@@ -198,14 +266,14 @@
 
 #gz_haalp ul{
 	display:none;
-    background: rgba(var(--theme-color-base_globalwhite));
-    border: solid 1px rgba(var(--theme-color-base_bright));
-    border-radius: 14px;
-    min-width: 266px;
-    text-align: left;
-    padding: 10px;
-    color: rgba(var(--theme-color-text_solid));
-    position:absolute;
+	background: rgba(var(--theme-color-base_globalwhite));
+	border: solid 1px rgba(var(--theme-color-base_bright));
+	border-radius: 14px;
+	min-width: 266px;
+	text-align: left;
+	padding: 10px;
+	color: rgba(var(--theme-color-text_solid));
+	position:absolute;
 	top:0;
 	right:0;
 	line-height: 1.6;
@@ -233,8 +301,8 @@
 
 #root.gzSave .gzMenu .gzSave{
 	height: 100%;
-    width: 230px;
-    overflow: visible;
+	width: 230px;
+	overflow: visible;
 	display:block;
 	text-align:left;
 	padding: 0 10px;
@@ -244,11 +312,11 @@
 
 
 #root.gzSave .gzMenu i{
-    background-color: rgba(var(--theme-color-chat_secondary));
-    color: rgba(var(--theme-color-text_solid));
-    border-radius: 12px;
-    font-style: normal;
-    padding: 2px;
+	background-color: rgba(var(--theme-color-chat_secondary));
+	color: rgba(var(--theme-color-text_solid));
+	border-radius: 12px;
+	font-style: normal;
+	padding: 2px;
 }
 
 

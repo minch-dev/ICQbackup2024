@@ -2,17 +2,16 @@ const ꕥ = {};
 ꕥ.ext_url = document.getElementById('gz_script').getAttribute('data-ext-url');
 ꕥ.ext_id = document.getElementById('gz_script').getAttribute('data-ext-id');
 ꕥ.icq = {contacts:{},chats:{}};
+ꕥ.icq_loading = true;
 ꕥ.msg_counter = 0;
 const ALERT_SND = new Audio(ꕥ.ext_url+"media/sndSrvMsg.wav");
 
-ꕥ.nothing = function(){}
+
 ꕥ.message = function(action,object,callback){
 	if(!action){
 		return;
 	}
-	if(typeof callback !== 'function'){
-		let callback = ꕥ.nothing;
-	}
+
 	let request = {action:action,object:object};
 	//console.debug(action,object,callback);
 	chrome.runtime.sendMessage(ꕥ.ext_id,request,null,function(response){
@@ -20,12 +19,17 @@ const ALERT_SND = new Audio(ꕥ.ext_url+"media/sndSrvMsg.wav");
 			console.debug('establishing extension connections');
 		} else {
 			//console.debug(typeof callback);
-			callback(response);
+			if(typeof callback === 'function'){
+				callback(response);
+			}
 		}
 	});
 }
 
 ꕥ.store_icq = function(){
+	if(ꕥ.icq_loading){
+		return;
+	}
 	let object = {};
 	if(ꕥ.icq.contacts && Object.keys(ꕥ.icq.contacts).length>0){
 		object.contacts = ꕥ.icq.contacts;
@@ -33,18 +37,10 @@ const ALERT_SND = new Audio(ꕥ.ext_url+"media/sndSrvMsg.wav");
 	if(ꕥ.icq.chats && Object.keys(ꕥ.icq.chats).length>0){
 		object.chats = ꕥ.icq.chats;
 	}
-
-	ꕥ.message('store',object,function(result){
-		//console.debug(result);
-	});
-	/*
-	try{
-		localStorage.setItem('ꕥICQbackup2024', JSON.stringify(ꕥ.icq));
-	} catch {
-		console.debug('failed to store json, too big?');
-	} */
-
+	ꕥ.message('store',object);
 }
+
+
 window.addEventListener("beforeunload", function(event) {
 	ꕥ.store_icq();
 	//event.returnValue = true;
@@ -101,13 +97,21 @@ window.addEventListener("beforeunload", function(event) {
 						Object.keys(collected.chats[sn].files).forEach(function(file_id){
 							let file_collected = collected.chats[sn].files[file_id];
 							let file_stored = stored.chats[sn].files[file_id];
-							Object.keys(file_collected).forEach(function(key){
-								file_stored[key] = file_collected[key];
-							});
-							
+							if(!file_stored){
+								stored.chats[sn].files[file_id] = file_collected;
+							} else {
+								Object.keys(file_collected).forEach(function(key){
+									file_stored[key] = file_collected[key];
+								});
+							}
 						});
 					}
-					
+					if(download_automatically()){ //if download is on
+						Object.keys(collected.chats[sn].files).forEach(function(file_id){
+							let file = stored.chats[sn].files[file_id];
+							ꕥ.download_file({file:file, chat_sn:sn, save_path:'#'+sn+'/'+ꕥ.make_filename(file)});
+						});
+					}
 				}
 			});
 		}
@@ -115,22 +119,22 @@ window.addEventListener("beforeunload", function(event) {
 
 	return stored;
 }
+
+ꕥ.remove_loading = function(){
+	ꕥ.icq_loading = false;
+	let loading = document.querySelector('.gzLoading');
+	if(loading){
+		loading.classList.remove('gzLoading');
+	}
+}
+
 ꕥ.restore_icq = function(){
 	//if ꕥ.icq has some data add that data
 	ꕥ.message('retrieve',null,function(icq){
 		ꕥ.icq = ꕥ.merge_icq(ꕥ.icq,icq);
 		ꕥ.refresh_stats();
+		ꕥ.remove_loading();
 	});
-	
-	/*let icq = null;
-	try{
-		icq = JSON.parse(localStorage.getItem('ꕥICQbackup2024'))
-	} catch {
-		console.debug('failed to load stored json');
-	}
-	if(!!icq && icq.contacts && icq.chats){
-		ꕥ.icq = icq;
-	}*/
 }
 ꕥ.restore_icq();
 ꕥ.interval = null;
@@ -286,32 +290,53 @@ window.addEventListener("beforeunload", function(event) {
 	ꕥ.html_download('<html><head><meta charset="utf8"></head><body>'+ꕥ.file_list.innerHTML+'</body></html>','#'+ꕥ.current_sn+' file list');
 }
 
+ꕥ.make_filename = function(file){
+	let filename_string = '#'+file.sn +'; '+file.file_id+'; ';
+	if(file.date_created){
+		filename_string = (file.date_created.replaceAll(' ','_').replaceAll(':','-'))+'; '+ filename_string;
+	}
+	if((filename_string.length + file.file_name.length) >255){
+		let dot = file.file_name.lastIndexOf('.');
+		if(dot < 0){
+			dot = file.file_name.length;
+		}
+		let file_ext = file.file_name.substr(dot);
+		if(file_ext.length<7){
+			filename_string += file.file_name.substr(0,255 -(filename_string.length + file_ext.length));
+			filename_string += file_ext;
+		} else {
+			filename_string += file.file_name.substr(0,255 - filename_string.length);
+		}
+	} else {
+		filename_string += file.file_name;
+	}
+	return filename_string;
+}
+
 ꕥ.render_file_list = function(){
 	let root = document.getElementById("root");
 	if(!!root && root.classList.contains("gzFiles") && !!ꕥ.current_sn && !!ꕥ.icq.chats[ꕥ.current_sn] && !!ꕥ.icq.chats[ꕥ.current_sn].files){
 		let files = ꕥ.icq.chats[ꕥ.current_sn].files;
 		ꕥ.file_list.innerHTML = '';
 		let now = Date.now();
-		let hours24 = 1000*60*60*24;
 		Object.keys(files).forEach(function(file_id){
 			let file = files[file_id];
+			file.file_id = file_id; //hack to remove possible bug
 			let i = document.createElement('i');
-			let time_left = 0;
+			let dlink_age = 0;
 			if(!!file.dlink_timestamp){
-				time_left = file.dlink_timestamp+hours24-now;
+				dlink_age = now - file.dlink_timestamp;
 			}
-			time_left = time_left/1000/60/60;
+			dlink_age = dlink_age/1000/60/60;
 			 
-			i.textContent = Math.floor(time_left)+'ч:'+Math.floor((time_left%1)*60)+'м ';
+			i.textContent = Math.floor(dlink_age)+'ч:'+Math.floor((dlink_age%1)*60)+'м ';
 			ꕥ.file_list.appendChild(i);
 			
 			let a = document.createElement('a');
-			a.textContent = file_id+'; '+file.file_name;//'; #'+file.sn+'; '
-			if(file.date_created){
-				a.textContent = (file.date_created.replaceAll(' ','_').replaceAll(':','-'))+'; '+ a.textContent;
-			}
+			a.textContent = ꕥ.make_filename(file);
 			a.href = file.dlink || '#';
 			a.target = '_blank';
+			a.setAttribute('downloaded', file.download_state || 0);
 			ꕥ.file_list.appendChild(a);
 			ꕥ.file_list.appendChild(document.createElement('br'));
 		});
@@ -486,7 +511,7 @@ window.addEventListener("beforeunload", function(event) {
 }
 
 ꕥ.copy  = function(obj){
-	if(typeof(obj) == 'object'){
+	if(typeof obj == 'object'){
 		return JSON.parse(JSON.stringify(obj))
 	} else {
 		return obj;
@@ -534,6 +559,7 @@ window.addEventListener("beforeunload", function(event) {
 	}
 }
 
+
 ꕥ.process_file_info = function(data){
 	let info = data.result.info;
 	let extra = data.result.extra;
@@ -557,6 +583,38 @@ window.addEventListener("beforeunload", function(event) {
 			Object.keys(extra).forEach(function(key){
 				file[key] = extra[key];
 			});
+		}
+		file.file_id = data.file_id;
+		
+		if(!ꕥ.icq_loading && ꕥ.download_automatically()){ //if download is on and not loading db
+			ꕥ.download_file({file:file, chat_sn:ꕥ.current_sn, save_path:'#'+ꕥ.current_sn+'/'+ꕥ.make_filename(file)});
+		}
+	}
+}
+
+ꕥ.download_automatically = function(){
+	return ꕥ.download_automatically_switch.checked;
+}
+
+
+ꕥ.download_file = function(object){
+	if((object.file.download_state || 0) < 1){ // if failed or never started to dl
+		object.file.download_state = 1;
+		ꕥ.message('download',object,ꕥ.download_state_update);
+	}
+}
+
+ꕥ.download_state_update = function(obj){
+	//console.debug(obj.file.download_state,obj.file);
+	let chat = ꕥ.icq.chats[obj.chat_sn];
+	if(!!chat){
+		if(!chat.files){
+			chat.files ={};
+		}
+		if(!chat.files[obj.file.file_id]){
+			chat.files[obj.file.file_id] = obj.file;
+		} else {
+			chat.files[obj.file.file_id].download_state = obj.file.download_state;
 		}
 	}
 }
@@ -632,6 +690,7 @@ window.addEventListener("beforeunload", function(event) {
 							chat.files[fsh.id] = {};
 						}
 						let file = chat.files[fsh.id];
+						file.file_id		= fsh.id;
 						file.has_previews	= fsh.is_previewable;
 						file.file_size		= fsh.size;
 						file.file_name		= fsh.name;
@@ -642,7 +701,7 @@ window.addEventListener("beforeunload", function(event) {
 						file.sn				= fsh.uid;
 						file.date_created	= fsh.date_create;
 						file.status			= fsh.status;
-						chat_msg.attachments.splice(fsh.order || 0, 0, fsh.id);						
+						chat_msg.attachments.splice(fsh.order || 0, 0, fsh.id);
 					}
 					delete chat_msg.filesharing; //not needed for production version
 					delete chat_msg.state; //not needed for production version
@@ -825,11 +884,12 @@ window.addEventListener("beforeunload", function(event) {
 ꕥ.html = `
 <div class="gzHistoryDump" id="gz_dump"></div>
 <div class="gzFilesList" id="gz_files"></div>
-<div class="gzMenu">
+<div class="gzMenu gzLoading">
 	<div class="gzPreview">
 		<button id="gz_save_btn" onclick="ꕥ.prep_mhtml()" title="Запустите автосбор истории чтобы получить все сообщения"><m>-</m></button>
 		<button id="gz_json_chat_btn" onclick="ꕥ.save_json_chat()" title="В сообщения входят события, поэтому число может не совпадать с html">*.json, этот чат <c>-</c> <m>-</m></button>
-		<button id="gz_json_all_btn" onclick="ꕥ.save_json_all()" title="">*.json, все чаты   <c>-</c> <m>-</m></button>
+		<button id="gz_json_all_btn" onclick="ꕥ.save_json_all()" title="Всё, что собрано (кроме файлов), в одном файле.">*.json, всё <c>-</c> <m>-</m></button>
+		<button id="gz_download_automatically" title='Скачивать файлы во время прокрутки истории. Отключите "Всегда указывать место для скачивания" и задайте папку. Расширение само создаст подпапки в ней для каждого чата.'><label><input id="gz_download_automatically_switch" type="checkbox" checked="checked"></label></button>
 		<button id="gz_files_btn" onclick="ꕥ.toggle_files()"><f>-</f></button>
 		<button id="gz_auto_scroll_btn" onclick="ꕥ.start_auto_scroll()" title="В конце будет подан звуковой сигнал.">Собрать историю чата (автопрокрутка)</button>
 	</div>
@@ -979,6 +1039,10 @@ window.addEventListener("beforeunload", function(event) {
 			ꕥ.btn_files = ꕥ.btn_files.querySelector('f');
 			ꕥ.dump = document.getElementById('gz_dump');
 			ꕥ.file_list = document.getElementById('gz_files');
+			ꕥ.download_automatically_switch = document.getElementById('gz_download_automatically_switch');
+			if(!ꕥ.icq_loading){
+				ꕥ.remove_loading();
+			}
 		}
 
 		
