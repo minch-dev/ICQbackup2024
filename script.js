@@ -5,7 +5,7 @@ const ꕥ = {};
 ꕥ.icq_loading = true;
 ꕥ.msg_counter = 0;
 const ALERT_SND = new Audio(ꕥ.ext_url+"media/sndSrvMsg.wav");
-
+const CONFIRM_SND = new Audio(ꕥ.ext_url+"media/sndSystem.wav");
 
 ꕥ.message = function(action,object,callback){
 	if(!action){
@@ -138,6 +138,14 @@ window.addEventListener("beforeunload", function(event) {
 }
 ꕥ.restore_icq();
 ꕥ.interval = null;
+ꕥ.ask_if_sure = function(){
+	CONFIRM_SND.play();
+	if (confirm('❗ФАЙЛЫ СКАЧИВАЮТСЯ АВТОМАТИЧЕСКИ❗\n⚠Выключите настройку браузера "Всегда указывать место для скачивания", или я ни за что не отвечаю⚠\n❓Все настроено правильно❓  ')) {
+		return true;
+	} else {
+		return false;
+	}
+}
 ꕥ.stop_auto_scroll = function(){
 	clearInterval(ꕥ.interval)
 	ꕥ.earliest_id = 0;
@@ -146,8 +154,14 @@ window.addEventListener("beforeunload", function(event) {
 	document.getElementById('rightPane').classList.remove('gzScanning');
 }
 ꕥ.start_auto_scroll = function(){
-	document.getElementById('rightPane').classList.add('gzScanning');
-	ꕥ.interval = window.setInterval(ꕥ.auto_scroll, 1000);
+	let go = true;
+	if(ꕥ.download_automatically()){
+		go = ꕥ.ask_if_sure();
+	}
+	if(go){
+		document.getElementById('rightPane').classList.add('gzScanning');
+		ꕥ.interval = window.setInterval(ꕥ.auto_scroll, ꕥ.auto_scroll_interval.value);
+	}
 }
 
 
@@ -435,7 +449,7 @@ window.addEventListener("beforeunload", function(event) {
 			}
 		});
 	}
-	let filename = 'ICQ #'+ꕥ.owner+' чат с '+document.title+' контактов['+ꕥ.get_total_chat_contacts(ꕥ.current_sn)+'] сообщений['+ꕥ.get_total_chat_messages(ꕥ.current_sn)+']';
+	let filename = 'ICQ #'+ꕥ.owner+' чат с '+ꕥ.format_person_name(ꕥ.current_sn)+' контактов['+ꕥ.get_total_chat_contacts(ꕥ.current_sn)+'] сообщений['+ꕥ.get_total_chat_messages(ꕥ.current_sn)+']';
 	ꕥ.json_download(branch,filename);
 }
 ꕥ.save_json_all = function(){
@@ -454,10 +468,11 @@ window.addEventListener("beforeunload", function(event) {
 		return Object.keys(ꕥ.icq.chats[ꕥ.current_sn].messages).sort()[0];
 	}
 }
-ꕥ.change_title = function(sn){
+
+ꕥ.format_person_name = function(sn){
+	let title = '#'+sn;
 	let person = ꕥ.icq.contacts[sn];
-	if(person && sn == ꕥ.current_sn){
-		let title = '#'+sn;
+	if(person){
 		if(!!person.firstName){
 			title += ' '+person.firstName;
 		}
@@ -467,6 +482,13 @@ window.addEventListener("beforeunload", function(event) {
 		if(!!person.friendly){
 			title += ' ('+person.friendly+')';
 		}
+	}
+	return title;
+}
+
+ꕥ.change_title = function(sn){
+	if(sn == ꕥ.current_sn){
+		let title = ꕥ.format_person_name(sn);
 		let m = ꕥ.btn_mhtml_m.textContent;
 		if(m){
 			title += ', ['+m+'] сообщений';
@@ -598,8 +620,8 @@ window.addEventListener("beforeunload", function(event) {
 
 
 ꕥ.download_file = function(object){
-	if((object.file.download_state || 0) < 1){ // if failed or never started to dl
-		object.file.download_state = 1;
+	if((object.file.download_state || 0) < 2){ // if failed or never started to dl
+		//object.file.download_state = 1; //unreliable
 		ꕥ.message('download',object,ꕥ.download_state_update);
 	}
 }
@@ -889,9 +911,9 @@ window.addEventListener("beforeunload", function(event) {
 		<button id="gz_save_btn" onclick="ꕥ.prep_mhtml()" title="Запустите автосбор истории чтобы получить все сообщения"><m>-</m></button>
 		<button id="gz_json_chat_btn" onclick="ꕥ.save_json_chat()" title="В сообщения входят события, поэтому число может не совпадать с html">*.json, этот чат <c>-</c> <m>-</m></button>
 		<button id="gz_json_all_btn" onclick="ꕥ.save_json_all()" title="Всё, что собрано (кроме файлов), в одном файле.">*.json, всё <c>-</c> <m>-</m></button>
-		<button id="gz_download_automatically" title='Скачивать файлы во время прокрутки истории. Отключите "Всегда указывать место для скачивания" и задайте папку. Расширение само создаст подпапки в ней для каждого чата.'><label><input id="gz_download_automatically_switch" type="checkbox" checked="checked"></label></button>
-		<button id="gz_files_btn" onclick="ꕥ.toggle_files()"><f>-</f></button>
-		<button id="gz_auto_scroll_btn" onclick="ꕥ.start_auto_scroll()" title="В конце будет подан звуковой сигнал.">Собрать историю чата (автопрокрутка)</button>
+		<button id="gz_download_automatically" title='Скачивать файлы во время прокрутки истории. Отключите "Всегда указывать место для скачивания" и задайте папку. Расширение само создаст подпапки для каждого чата.'><label><input id="gz_download_automatically_switch" type="checkbox" checked="checked"></label></button>
+		<button id="gz_files_btn" onclick="ꕥ.toggle_files()" title="Если какие-то ссылки протухли и не открываются, прокрутите историю снова, чтобы их обновить."><f>-</f></button>
+		<div id="gz_auto_scroll_btn"><input id="gz_auto_scroll_interval" type="number" step="100" min="0" value="1337" title="Время d миллисекундах (1сек = 1000мс) между запросами каждой страницы истории"><button onclick="ꕥ.start_auto_scroll()" title="В конце будет подан звуковой сигнал.">Собрать историю чата (автопрокрутка)</button></div>
 	</div>
 	<div class="gzSave">
 		<span title="Развернутое пояснение по клику на значок дополнения (цветок ICQ)">Страница готова к сохранению</span>
@@ -1040,6 +1062,7 @@ window.addEventListener("beforeunload", function(event) {
 			ꕥ.dump = document.getElementById('gz_dump');
 			ꕥ.file_list = document.getElementById('gz_files');
 			ꕥ.download_automatically_switch = document.getElementById('gz_download_automatically_switch');
+			ꕥ.auto_scroll_interval = document.getElementById('gz_auto_scroll_interval');
 			if(!ꕥ.icq_loading){
 				ꕥ.remove_loading();
 			}

@@ -6,14 +6,23 @@
 <style>
 body{
 	width:580px;
-	font-size:16px;
+	font-size:15px;
 }
 i {
-    background-color: #e3ffcc;
-    border-radius: 12px;
-    font-style: normal;
-    padding: 2px;
-	white-space:nowrap;
+	background-color: #e3ffcc;
+	border-radius: 12px;
+	font-style: normal;
+	padding: 0 6px;
+	line-height: 1.5em;
+	white-space: nowrap;
+}
+
+a{
+	color: limegreen;
+}
+
+dl{
+	margin-top: 0;
 }
 
 dl dd{
@@ -24,15 +33,21 @@ h1,h2{
 	margin:0;
 	font-size:20px;
 	text-align:center;
+	position: fixed;
 }
 blockquote{
 	text-align: right;
+	margin: 0 10px;
 }
 
 </style>
 </head>
 <body>
 <h1>Справка.</h1>
+<blockquote>
+@<a href="https://github.com/minch-dev" target="_blank" title="Профиль на Гитхабе">minch-dev</a> <br>
+<a href="https://boosty.to/minch-dev/donate" target="_blank">Задонатить</a>  автору
+</blockquote>
 <dl>
 	<dt>Сбор</dt>
 	<dd>Нажмите кнопку <i>Собрать историю чата (автопрокрутка)</i> либо отскрольте сами сколько нужно</dd>
@@ -42,20 +57,19 @@ blockquote{
 	<dd>Нажмите <i>⋮</i> в правом верхнем углу браузера</dd>
 	<dd>Выберите <i>Сохранить и поделиться</i> ⇨ <i>Сохранить страницу как...</i></dd>
 	<dd>В открывшемся окне в меню <i>Тип файла</i> выберите <i>Веб-страница, один файл (*.mhtml)</i> и нажмите <i>Сохранить</i></span></dd>
+	<dd>Если изображения или предпросмотры ссылок не прогрузились в окне предпросмотра, попробуйте проскроллить историю туда-сюда пока они не прогрузятся.</dd>
 
 	<dt>*.json</dt>
 	<dd>Нажмите кнопку <i>*.json, этот чат</i> или <i>*.json, всё</i></dd>
 	
 	<dt>Файлы</dt>
-	<dd>Рекомендую опцию <i>Качать файлы сразу</i>, т.к. ссылки перестают работать когда им захочется. Список собранных ссылок на файлы можно увидеть ткнув кнопку <i>Файлы</i></dd>
+	<dd>Рекомендую <i>Качать файлы сразу</i>, но только⚠️ с отключенной опцией <i>Всегда указывать место для скачивания</i> [chrome://settings/downloads].</dd>
+	<dd>Ссылки живут недолго и перестают работать когда им захочется. Список собранных ссылок на файлы можно увидеть ткнув кнопку <i>Файлы</i>. Прокрутите историю снова, чтобы обновить протухшие ссылки.</dd>
 	
-	<dt><br>Если web.icq.com больше нет</dt>
+	<dt><br><em>Если web.icq.com больше нет</em></dt>
 	<dd><button id="gz_json_all_btn" title="">скачайте всё</button>, что собрали пока он был</dd>
 </dl>
-<blockquote>
-@<a href="https://github.com/minch-dev" target="_blank" title="Профиль на Гитхабе">minch-dev</a> <br>
-<a href="https://boosty.to/minch-dev/donate" target="_blank">Задонатить</a>  автору
-</blockquote>
+
 
 <script src="pop.js" charset="utf-8"></script>
 </body>

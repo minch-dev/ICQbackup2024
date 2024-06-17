@@ -57,7 +57,7 @@
 }
 
 .btnGoBackUp button::before{
-	content:"Прокрутить туда, где прервали сбор";
+	content:"Телепорт к последнему собранному сообщению";
 }
 
 #gz_auto_scroll_btn{
@@ -66,8 +66,25 @@
 	margin:8px;
 	top: 100%;
 	margin-right: 60px;
+	white-space: nowrap;
+	
+}
+
+#gz_auto_scroll_btn button{
 	width: 13.2em;
 	padding: 0;
+	white-space: normal;
+}
+
+#gz_auto_scroll_btn input{
+    font-size: 1.5em;
+    width: 5em;
+    text-align: center;
+    vertical-align: top;
+	display:none;
+}
+#gz_auto_scroll_btn:hover input{
+	display:inline-block;
 }
 
 #root.im-layout-infopanel #gz_auto_scroll_btn

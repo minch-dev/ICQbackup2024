@@ -14,7 +14,7 @@
         }
     ],
     "web_accessible_resources": [{ 
-		"resources": ["script.js", "dialogue.css","media/sndSrvMsg.wav","media/sndStartup.wav"],
+		"resources": ["script.js", "dialogue.css","media/sndSrvMsg.wav","media/sndStartup.wav","media/sndSystem.wav"],
 		"matches": ["<all_urls>"]
 	}],
     "permissions": [
