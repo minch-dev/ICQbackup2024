@@ -16,7 +16,7 @@ const CONFIRM_SND = new Audio(ꕥ.ext_url+"media/sndSystem.wav");
 	//console.debug(action,object,callback);
 	chrome.runtime.sendMessage(ꕥ.ext_id,request,null,function(response){
 		if (chrome.runtime.lastError) { //needed for chrome to shut up
-			console.debug('establishing extension connections');
+			//console.debug('establishing extension connections');
 		} else {
 			//console.debug(typeof callback);
 			if(typeof callback === 'function'){
@@ -913,7 +913,7 @@ window.addEventListener("beforeunload", function(event) {
 		<button id="gz_json_all_btn" onclick="ꕥ.save_json_all()" title="Всё, что собрано (кроме файлов), в одном файле.">*.json, всё <c>-</c> <m>-</m></button>
 		<button id="gz_download_automatically" title='Скачивать файлы во время прокрутки истории. Отключите "Всегда указывать место для скачивания" и задайте папку. Расширение само создаст подпапки для каждого чата.'><label><input id="gz_download_automatically_switch" type="checkbox" checked="checked"></label></button>
 		<button id="gz_files_btn" onclick="ꕥ.toggle_files()" title="Если какие-то ссылки протухли и не открываются, прокрутите историю снова, чтобы их обновить."><f>-</f></button>
-		<div id="gz_auto_scroll_btn"><input id="gz_auto_scroll_interval" type="number" step="100" min="0" value="1337" title="Время d миллисекундах (1сек = 1000мс) между запросами каждой страницы истории"><button onclick="ꕥ.start_auto_scroll()" title="В конце будет подан звуковой сигнал.">Собрать историю чата (автопрокрутка)</button></div>
+		<div id="gz_auto_scroll_btn"><input id="gz_auto_scroll_interval" type="number" step="100" min="666" value="1337" title="Время d миллисекундах (1сек = 1000мс) между запросами каждой страницы истории"><button onclick="ꕥ.start_auto_scroll()" title="В конце будет подан звуковой сигнал.">Собрать историю чата (автопрокрутка)</button></div>
 	</div>
 	<div class="gzSave">
 		<span title="Развернутое пояснение по клику на значок дополнения (цветок ICQ)">Страница готова к сохранению</span>
@@ -942,37 +942,6 @@ window.addEventListener("beforeunload", function(event) {
 `;
 
 
-
-//getDownloadGDPRDataLink
-//checkGDPRData
-
-//lastseen: 1559560271
-//var Chat = function() {
-//var InfoPanel = function() {
-//localStorage _AIM_clist_list
-//_AIM_dialogs_data
-
-//return this.updateViewWithFixPosition(updatingFunction)
-//function _isScrolledToHistoryEnd()
-//function checkLastVisibleMessage() {
-
-//ꕥ.webpack_modules[1874]  FileAPI.checkGDPRData()
-//ꕥ.webpack_modules[1874]  FileAPI.getDownloadGDPRDataLink()
-
-
-//data.sender === app_AppState.a.ACTIVE_MAIL
-//isSelf
-
-//selfProfile
-
-//var mixFavoriteInList = function(data) {
-//https://u.icq.net/api/v92/wim/im/sendIM
-
-//value: function updateDialogInfoData(data) {
-	//this.infoData.isFavorite = this.infoData.selfProfile && this.infoData.activeChat;
-
-//value: function onPageLoad(pg, dialog) {
-	//this.isFavorite = this.mail === app_AppState.a.ACTIVE_MAIL;
 
 //monkey patch and reinject the script and everything
 ꕥ.fetch_text(location.href,function(html){
@@ -1006,7 +975,7 @@ window.addEventListener("beforeunload", function(event) {
 		
 		ꕥ.add_style_txt(ꕥ.css);
 		jscript = jscript
-			.replace(patch_1,patch_1+'.replace("data:application/octet-stream;base64,","data:image;base64,")') //fix avatars
+			.replace(patch_1,patch_1+'.replace("data:application/octet-stream;base64,","data:image;base64,")') //fix avatars ALSO BASE64 AVATARS
 			.replace(patch_2,patch_2+'ꕥ.scrap_chat();') //clone messages before unload
 			.replace(patch_3,patch_3+'ꕥ.scrap_chat();') //clone messages before unload
 				//.replace(patch_4,'ꕥ.process_xhr(resultData);'+patch_4) //history and gallery xhrs

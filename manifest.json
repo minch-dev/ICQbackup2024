@@ -1,10 +1,9 @@
 ﻿{
     "name": "ICQ Backup 2024",
-    "version": "0.0.0.0",
+    "version": "1.3.3.7",
 	"description": "ICQ history backup tool 2024",
-    //"options_page": "opt.htm",
 	"background": {	"service_worker": "bg.js"	},
-    //"key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4r/pUHVPYQTn7vu3YHT52I0SKM15OBOTi0Jii4q5Koxd3Gdc/WXdqC2YgMA25J5PRiSubu/nHFf12Ubp3OZyNqB3j45ZscQ+tH1bwcV+cqdvv/Ik6VQaS6/qLmenLdFPKOCg/g1L1iKZu6Jjny6GlovpBj+7gjWQZBIoGBd70HQIDAQAB",
+	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtOIyPFfor2vvbs3N7c7KSnvGHVdWd9JziQ4hbu1cRx4j/MtUYuY0YCjVzDEKhEhGhTs+ievBbwwmFK+lCGJ1N4SN+3aryCBCpmidOxXe0JCY5BbYnQDGNBTf7nc+4e1ODBeyKuyIq181LNYFJ7nopOE7oF1M/zAUF24LvofCR7/rZqQ12O1/OR6wHugZLGoOlQEGBrhFWichso13nWwNu3QATHu+cY9Zz9OtBIa+MGB1Sq7foh7YD0yk+c/lmkkTOns7+8ic+db34I+ptsgldfCrMpkacaAfk9ctNSeZRI7R1B3gLbz3BaYUb+FbOgWk3ka6iUH78poktw45XVyZTwIDAQAB",
     "manifest_version": 3,
     "content_scripts": [
         {
