@@ -3,6 +3,11 @@ ICQ history backup tool (web.icq.com). Added base64 avatars of contacts, now it 
 
 Инструмент сохранения истории, файлов, и контактов с web.icq.com. Добавлено сохранение аватаров для контактов. Теперь спрашивает при каждом открытии или перезагрузке страницы нужна ли вам автозагрузка файлов или нет. Последний фикс, времени до 26 числа немного, реальная жизнь подкинула больших проблем, так что мне совсем не до расширений. Удачи!
 
+# Chrome Web Store
+The extension was published really fast, I didn't expect that! Let's hope it's going to be updated as fast as it was approved!
+https://chromewebstore.google.com/detail/icq-backup-2024/dppnmfiofjbcdnimpbbbpdjabihmjpef
+Расширение опубликовано в магазине расширений хрома! Правда там версия без последнего фикса, но будем надеятся, что она обновится так же быстро, как проверилась.
+
 # Installation
 Download source as zip file, unpack, in chrome extensions turn on `Developer mode` switch and click `Load unpacked extension`.
 

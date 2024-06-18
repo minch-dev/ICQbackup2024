@@ -1,6 +1,6 @@
 ﻿{
     "name": "ICQ Backup 2024",
-    "version": "1.3.3.7",
+    "version": "1.9.8.4",
 	"description": "ICQ history backup tool 2024",
 	"background": {	"service_worker": "bg.js"	},
 	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtOIyPFfor2vvbs3N7c7KSnvGHVdWd9JziQ4hbu1cRx4j/MtUYuY0YCjVzDEKhEhGhTs+ievBbwwmFK+lCGJ1N4SN+3aryCBCpmidOxXe0JCY5BbYnQDGNBTf7nc+4e1ODBeyKuyIq181LNYFJ7nopOE7oF1M/zAUF24LvofCR7/rZqQ12O1/OR6wHugZLGoOlQEGBrhFWichso13nWwNu3QATHu+cY9Zz9OtBIa+MGB1Sq7foh7YD0yk+c/lmkkTOns7+8ic+db34I+ptsgldfCrMpkacaAfk9ctNSeZRI7R1B3gLbz3BaYUb+FbOgWk3ka6iUH78poktw45XVyZTwIDAQAB",
