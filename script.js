@@ -140,7 +140,7 @@ window.addEventListener("beforeunload", function(event) {
 ꕥ.interval = null;
 ꕥ.ask_if_sure = function(){
 	CONFIRM_SND.play();
-	if (confirm('❗ФАЙЛЫ СКАЧИВАЮТСЯ АВТОМАТИЧЕСКИ❗\n⚠Выключите настройку браузера "Всегда указывать место для скачивания", или я ни за что не отвечаю⚠\n❓Все настроено правильно❓  ')) {
+	if (confirm('❗ФАЙЛЫ СКАЧИВАЮТСЯ АВТОМАТИЧЕСКИ❗\n⚠Выключите настройку браузера "Всегда указывать место для скачивания", или я ни за что не отвечаю⚠\n❓Все настроено правильно❓\n❓Нужно ли вам автоскачивание файлов❓')) {
 		return true;
 	} else {
 		return false;
@@ -486,6 +486,7 @@ window.addEventListener("beforeunload", function(event) {
 	return title;
 }
 
+
 ꕥ.change_title = function(sn){
 	if(sn == ꕥ.current_sn){
 		let title = ꕥ.format_person_name(sn);
@@ -494,8 +495,34 @@ window.addEventListener("beforeunload", function(event) {
 			title += ', ['+m+'] сообщений';
 		}
 		document.title = title;
+
+	}
+	ꕥ.save_avatar();
+
+}
+
+ꕥ.save_avatar = function(){
+	let avatar_node = document.querySelector('.app-topbar__title .im-avatarbox');
+	if(!!avatar_node){
+		let sn = avatar_node.getAttribute('data-sn');
+		if(!!sn){
+			let base64_string = avatar_node.style.backgroundImage.replaceAll('"','').trim();
+			if(base64_string.indexOf('url(')==0){
+				base64_string = base64_string.replace('url(','').replace(')','');
+				//console.debug(sn,base64_string);
+				if(!ꕥ.icq.contacts){
+					ꕥ.icq.contacts = {};
+				}
+				if(!ꕥ.icq.contacts[sn]){
+					ꕥ.icq.contacts[sn] = {sn:sn};
+				}
+				ꕥ.icq.contacts[sn].avatar = base64_string;
+			}
+		}
+
 	}
 }
+
 
 ꕥ.update_contact = function(info){
 	info = ꕥ.copy(info);
@@ -640,12 +667,19 @@ window.addEventListener("beforeunload", function(event) {
 		}
 	}
 }
-
+ꕥ.first_time_ask = true;
 ꕥ.owner = 'outgoing';
 ꕥ.process_msgs = function(json){
 	if(ꕥ.msg_counter >=500){
 		ꕥ.msg_counter = 0;
 		ꕥ.store_icq();
+	}
+
+	if(ꕥ.first_time_ask){
+		ꕥ.first_time_ask = false;
+		if(!ꕥ.ask_if_sure()){
+			ꕥ.download_automatically_switch.checked = false;
+		}
 	}
 	//console.debug(json);
 	ꕥ.owner = ꕥ.module_13.a.ACTIVE_MAIL;
@@ -765,7 +799,6 @@ window.addEventListener("beforeunload", function(event) {
 	ꕥ.removeWarned();
 	ꕥ.render_file_list();
 }
-
 
 ꕥ.css = `
 @charset "utf-8";
@@ -910,7 +943,7 @@ window.addEventListener("beforeunload", function(event) {
 	<div class="gzPreview">
 		<button id="gz_save_btn" onclick="ꕥ.prep_mhtml()" title="Запустите автосбор истории чтобы получить все сообщения"><m>-</m></button>
 		<button id="gz_json_chat_btn" onclick="ꕥ.save_json_chat()" title="В сообщения входят события, поэтому число может не совпадать с html">*.json, этот чат <c>-</c> <m>-</m></button>
-		<button id="gz_json_all_btn" onclick="ꕥ.save_json_all()" title="Всё, что собрано (кроме файлов), в одном файле.">*.json, всё <c>-</c> <m>-</m></button>
+		<button id="gz_json_all_btn" onclick="ꕥ.save_json_all()" title="Всё, что собрано (кроме файлов), в одном файле. Чтобы сохранить все контакты ткните по каждому из них хотя бы раз. Наведение курсора на портрет так же дает доп. информацию о контакте.">*.json, всё <c>-</c> <m>-</m></button>
 		<button id="gz_download_automatically" title='Скачивать файлы во время прокрутки истории. Отключите "Всегда указывать место для скачивания" и задайте папку. Расширение само создаст подпапки для каждого чата.'><label><input id="gz_download_automatically_switch" type="checkbox" checked="checked"></label></button>
 		<button id="gz_files_btn" onclick="ꕥ.toggle_files()" title="Если какие-то ссылки протухли и не открываются, прокрутите историю снова, чтобы их обновить."><f>-</f></button>
 		<div id="gz_auto_scroll_btn"><input id="gz_auto_scroll_interval" type="number" step="100" min="666" value="1337" title="Время d миллисекундах (1сек = 1000мс) между запросами каждой страницы истории"><button onclick="ꕥ.start_auto_scroll()" title="В конце будет подан звуковой сигнал.">Собрать историю чата (автопрокрутка)</button></div>
